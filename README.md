@@ -6,4 +6,4 @@ Version 1.0
 
 By Ivan Hromada, Derek Uskert, and Jan Hromada? 
 
->The objective of the game is to hit as many squirrels as possible with a hammer. To run from the windows command prompt type '<hammertime.py>'.
+>The objective of the game is to hit as many squirrels as possible with a hammer. To run from the windows command prompt type `hammertime.py`.
