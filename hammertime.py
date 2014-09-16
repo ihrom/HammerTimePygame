@@ -29,6 +29,8 @@ hammerImage = pygame.image.load('hammer1.png')
 hammerRect = hammerImage.get_rect()
 squirrelImage = pygame.image.load('squirrel.png')
 squirrelRect = squirrelImage.get_rect()
+forestImage = pygame.image.load('forest1.png')
+forestRect = forestImage.get_rect()
 
 gameSurface = pygame.display.set_mode((400,400))
 pygame.display.set_caption('Hammer Time')
@@ -106,7 +108,9 @@ while True:
 
         pygame.mouse.set_pos(hammerRect.centerx, hammerRect.centery)
 
-        gameSurface.fill(BACKGROUNDCOLOR)
+        #gameSurface.fill(forestImage)
+        forestRect.topleft = (0,0)
+        gameSurface.blit(forestImage, forestRect)
 
         gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR)
         gamescoremissedrect = gamescoremissedobj.get_rect()
@@ -145,7 +149,8 @@ while True:
         randomTimer += randomClock.tick()
         gameClock.tick(40)
 
-    gameSurface.fill(BACKGROUNDCOLOR)    
+    #gameSurface.fill(BACKGROUNDCOLOR)    
+    
 
     gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR)
     gamescoremissedrect = gamescoremissedobj.get_rect()
