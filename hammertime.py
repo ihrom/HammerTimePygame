@@ -1,12 +1,10 @@
 # Hammer Time
-# by Ivan H.
-# May 21, 2014
+# by Ivan Hromada and Derek Uskert
 
 import pygame, sys, random
 from pygame.locals import *
 
 TEXTCOLOR = (255,255,255)
-BACKGROUNDCOLOR = (0,0,0)
 
 def presstostart():
     while True:
@@ -61,54 +59,25 @@ while True:
     randomTimer = 0
     
     while True:
+        gameClock.tick(30)
+        swing = 0
+        
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-
-            if event.type == KEYDOWN:
-                if event.key == K_LEFT or event.key == ord('a'):
-                    moveRight = False
-                    moveLeft = True
-                if event.key == K_RIGHT or event.key == ord('d'):
-                    moveLeft = False
-                    moveRight = True
-                if event.key == K_UP or event.key == ord('w'):
-                    moveDown = False
-                    moveUp = True
-                if event.key == K_DOWN or event.key == ord('s'):
-                    moveUp = False
-                    moveDown = True
-
             if event.type == KEYUP:
                 if event.key == K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-                    
-                if event.key == K_LEFT or event.key == ord('a'):
-                    moveLeft = False
-                if event.key == K_RIGHT or event.key == ord('d'):
-                    moveRight = False
-                if event.key == K_UP or event.key == ord('w'):
-                    moveUp = False
-                if event.key == K_DOWN or event.key == ord('s'):
-                    moveDown = False
 
             if event.type == MOUSEMOTION:
                 hammerRect.move_ip(event.pos[0] - hammerRect.centerx, event.pos[1] - hammerRect.centery)
-
-        if moveUp and hammerRect.top > 0:
-            hammerRect.move_ip(0,-5)
-        if moveRight and hammerRect.right < 400:
-            hammerRect.move_ip(5,0)
-        if moveDown and hammerRect.bottom < 400:
-            hammerRect.move_ip(0,5)
-        if moveLeft and hammerRect.left > 0:
-            hammerRect.move_ip(-5,0)
-
+            if event.type == MOUSEBUTTONDOWN:
+                swing = event.button
+                
         pygame.mouse.set_pos(hammerRect.centerx, hammerRect.centery)
 
-        #gameSurface.fill(forestImage)
         forestRect.topleft = (0,0)
         gameSurface.blit(forestImage, forestRect)
 
@@ -127,7 +96,7 @@ while True:
 
         pygame.display.update()
 
-        if hammerRect.colliderect(squirrelRect):
+        if hammerRect.colliderect(squirrelRect) and swing == 1:
             hitsquirrels += 1
             squirrelRect.topleft = (random.randint(0, 400-40), random.randint(0,400-40))
             randomTimer = 0
@@ -147,10 +116,7 @@ while True:
             break
 
         randomTimer += randomClock.tick()
-        gameClock.tick(40)
-
-    #gameSurface.fill(BACKGROUNDCOLOR)    
-    
+        
 
     gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR)
     gamescoremissedrect = gamescoremissedobj.get_rect()
@@ -177,7 +143,7 @@ while True:
     gamenewrect.topleft = ((400/4)+10, (400/3)+100)
     gameSurface.blit(gamenewobj, gamenewrect)
 
-    pygame.display.update()
+    pygame.display.flip()
     presstostart()
 
 
