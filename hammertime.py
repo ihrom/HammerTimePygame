@@ -7,43 +7,15 @@
 import pygame, sys, random
 #Import constants like KEYDOWN, MOUSEMOTION, etc. 
 from pygame.locals import *
-
-#Set some game constants
-TEXTCOLOR = (255,255,255)
-GAMEFPS = 30
+from HTconstants import *
 
 #Always need to initialize pygame
 pygame.init()
-
-#Prepare game window variable and caption
-gameSurface = pygame.display.set_mode((400,400))
-pygame.display.set_caption('Hammer Time')
-
-#Hide mouse over screen
-pygame.mouse.set_visible(False)
-
-#Initialize game speed variable(FPS)
-#Initialize random clock variable
-gameClock = pygame.time.Clock()
-randomClock = pygame.time.Clock()
-
-#Want to prepare the sound files here.
-
 
 #Set location of background image and text 
 background_position = [0,0]
 gametitle_position = [(400/3)-50,(400/3)]
 gamestart_position = [(400/3)-100,(400/3)+50]
-
-#Load images and properties
-hammerImage = pygame.image.load('hammer1.png')
-hammerImage.set_colorkey((255,255,255))
-hammerRect = hammerImage.get_rect()
-squirrelImage = pygame.image.load('squirrel.png')
-squirrelImage.set_colorkey((255,255,255))
-squirrelRect = squirrelImage.get_rect()
-#Background image must be same size as window
-backgroundImage = pygame.image.load('forest1.png')
 
 #Define function to start game with KEYDOWN
 #Exits game if esc or close is chosen
@@ -59,14 +31,31 @@ def presstostart():
                     sys.exit()
                 return
 
+def get_image(file_name):
+        myimage = pygame.image.load(file_name)
+        myimage.set_colorkey(WHITE)
+        return myimage
+
+def game_text(my_text,text_pos):
+        textobj = gamefont.render(my_text, 1, WHITE)
+        gameSurface.blit(textobj,text_pos)
+
+#Prepare game window variable and caption
+gameSurface = pygame.display.set_mode((400,400))
+pygame.display.set_caption('Hammer Time')
+
+#Hide mouse over screen
+pygame.mouse.set_visible(False)
+
+#Want to prepare the sound files here.
+
+
 #Initialize game font
 gamefont = pygame.font.SysFont(None, 48)
 
 #Put title and text on game window
-gametitleobj = gamefont.render('Hammer Time', 1, TEXTCOLOR)
-gameSurface.blit(gametitleobj, gametitle_position)
-gamestartobj = gamefont.render('Press any key to start.', 1, TEXTCOLOR)
-gameSurface.blit(gamestartobj, gamestart_position)
+game_text('Hammer Time',gametitle_position)
+game_text('Press any key to start.',gamestart_position)
 
 #Display window on screen
 pygame.display.update()
@@ -75,6 +64,21 @@ presstostart()
 
 #Define main game loop            
 def main():
+    #Load images and properties
+    hammerImage = get_image('hammer1.png')
+    hammerRect = hammerImage.get_rect()
+
+    squirrelImage = get_image('squirrel.png')
+    squirrelRect = squirrelImage.get_rect()
+
+    #Background image must be same size as window
+    backgroundImage = pygame.image.load('forest1.png')
+
+    #Initialize game speed variable(FPS)
+    #Initialize random clock variable
+    gameClock = pygame.time.Clock()
+    randomClock = pygame.time.Clock()
+
     done = False
 
     while not done:        
@@ -110,16 +114,14 @@ def main():
                 
             pygame.mouse.set_pos(hammerRect.centerx, hammerRect.centery)
 
-            gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR)
+            gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, WHITE)
             gameSurface.blit(gamescoremissedobj, (10,0))
 
-            gamescorehitobj = gamefont.render('Hit = %s' % (hitsquirrels), 1, TEXTCOLOR)
+            gamescorehitobj = gamefont.render('Hit = %s' % (hitsquirrels), 1, WHITE)
             gameSurface.blit(gamescorehitobj, (10,40))
 
             gameSurface.blit(hammerImage, hammerRect)
             gameSurface.blit(squirrelImage, squirrelRect)
-
-            pygame.display.flip()
 
             if hammerRect.colliderect(squirrelRect) and swing == 1:
                 hitsquirrels += 1
@@ -142,32 +144,35 @@ def main():
 
             randomTimer += randomClock.tick()
             gameClock.tick(GAMEFPS)
-        
+            pygame.display.flip()
 
-        gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR) 
+        gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, WHITE) 
         gameSurface.blit(gamescoremissedobj, (10,0))
 
-        gamescorehitobj = gamefont.render('Hit = %s' % (hitsquirrels), 1, TEXTCOLOR)
+        gamescorehitobj = gamefont.render('Hit = %s' % (hitsquirrels), 1, WHITE)
         gameSurface.blit(gamescorehitobj, (10,40))
 
-        gameoverobj = gamefont.render('GAME OVER', 1, TEXTCOLOR)
+        gameoverobj = gamefont.render('GAME OVER', 1, WHITE)
         gameSurface.blit(gameoverobj, ((400/4), (400/3)))
 
-        gamenewobj = gamefont.render('Press any key to',1, TEXTCOLOR)
+        gamenewobj = gamefont.render('Press any key to',1, WHITE)
         gameSurface.blit(gamenewobj, ((400/4)-30, (400/3)+50))
 
-        gamenewobj = gamefont.render('play again.',1, TEXTCOLOR) 
+        gamenewobj = gamefont.render('play again.',1, WHITE) 
         gameSurface.blit(gamenewobj, ((400/4)+10, (400/3)+100))
 
-        pygame.display.flip()
+        pygame.display.update()
         presstostart()
 
+    pygame.quit()
+    sys.exit()
+ 
 #Run game loop
 if __name__ == "__main__":
     main()
 
-pygame.quit()
-sys.exit()
+
+
     
 
 
