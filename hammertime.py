@@ -1,149 +1,235 @@
-# Hammer Time
-# by Ivan Hromada and Derek Uskert
-
-import pygame, sys, random
+import pygame, random
 from pygame.locals import *
 
-TEXTCOLOR = (255,255,255)
+#--- Global constants ---
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+GREEN = (0,255,0)
+RED = (255,0,0)
 
-def presstostart():
-    while True:
+SCREEN_WIDTH = 400
+SCREEN_HEIGHT = 400
+
+#--- Classes ---
+class Background(pygame.sprite.Sprite):
+    """This class represents the screen background"""
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("forest1.png")
+
+class Startgame(object):
+    """This class begins intro window"""
+    
+    def __init__(self):
+        """Nothing to initialize"""
+
+    def check_start(self):
         for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                return True
+        return False
+
+    def start_window(self,screen):
+        """Prepare player to play"""
+        screen.fill(BLACK)
+
+        startfont = pygame.font.SysFont(None, 48)
+        starttext = startfont.render("Click to start", True, WHITE)
+        screen.blit(starttext,[(400/4),(400/2)])
+
+        pygame.display.flip()
+    
+    
+class Hammer(pygame.sprite.Sprite):
+    """ This class represents the hammer """
+    swing = False
+    
+    def __init__(self):
+        """ Sprite constructor """
+        self.swing = False
+
+        #Call parent class
+        pygame.sprite.Sprite.__init__(self)
+        #Load the image
+        self.image = pygame.image.load("hammer1.png")
+        #Set transparent color
+        self.image.set_colorkey([255,255,255])
+        #Get position of image with rect()
+        self.rect = self.image.get_rect()
+
+        #print("A hammer is created!")
+
+    def update_pos(self):
+        """ Update the hammer location """
+        pos = pygame.mouse.get_pos()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+
+    def swing_hammer(self):
+        """Check if hammer was swung"""
+        mousebuttons = pygame.mouse.get_pressed()
+        self.swing = mousebuttons[0]
+        
+
+class Squirrel(pygame.sprite.Sprite):
+    """ This class represents the squirrel """
+        
+    def __init__(self):
+        """ Sprite constructor """
+        #Call parent class
+        pygame.sprite.Sprite.__init__(self)
+        #Load the image
+        self.image = pygame.image.load("squirrel.png")
+        #Set transparent color
+        self.image.set_colorkey([255,255,255])
+        #Get position of image with rect()
+        self.rect = self.image.get_rect()
+
+        #print("A squirrel is created!")
+
+    def reset_pos(self):
+        """ Update the squirrel location """
+        self.rect.x = random.randrange(0,400)
+        self.rect.y = random.randrange(0,400)
+        
+        
+class Game(object):
+    """ This class represents an instance of the game """
+
+    #--- Class attributes ---
+    # Sprites
+    hammer = None
+    squirrel = None
+
+    # Initialize game settings
+    game_over = False
+    missed = 0
+    hit = 0
+    squirrel_clock = None
+    timer = 0
+    setTime = 0
+
+    #--- Class methods ---
+    # Set up game
+    def __init__(self):
+        """ This method initializes game """
+        self.game_over = False
+        self.missed = 0
+        self.hit = 0
+        self.squirrel_clock = pygame.time.Clock()
+        self.timer = 0
+        self.setTime = random.randint(2000,3000)
+
+        #Create Background
+        self.background = Background()
+    
+        # Create Hammer
+        self.hammer = Hammer()
+
+        # Create squirrel
+        self.squirrel = Squirrel()
+        self.squirrel.reset_pos()
+        
+    def process_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return True
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-                return
+                    return True
+                if self.game_over:
+                    self.__init__()
+        return False
 
-pygame.init()
+    def game_action(self):
+        """ This methods runs for each frame loop """
 
-gameClock = pygame.time.Clock()
-randomClock = pygame.time.Clock()
-
-hammerImage = pygame.image.load('hammer1.png')
-hammerRect = hammerImage.get_rect()
-squirrelImage = pygame.image.load('squirrel.png')
-squirrelRect = squirrelImage.get_rect()
-forestImage = pygame.image.load('forest1.png')
-forestRect = forestImage.get_rect()
-
-gameSurface = pygame.display.set_mode((400,400))
-pygame.display.set_caption('Hammer Time')
-pygame.mouse.set_visible(False)
-
-gamefont = pygame.font.SysFont(None, 48)
-
-gametitleobj = gamefont.render('Hammer Time', 1, TEXTCOLOR)
-gametitlerect = gametitleobj.get_rect()
-gametitlerect.topleft = ((400/3)-50, (400/3))
-gameSurface.blit(gametitleobj, gametitlerect)
-
-gamestartobj = gamefont.render('Press any key to start.',1, TEXTCOLOR)
-gamestartrect = gamestartobj.get_rect()
-gamestartrect.topleft = ((400/3)-100, (400/3)+50)
-gameSurface.blit(gamestartobj, gamestartrect)
-
-pygame.display.update()
-presstostart()
-
-while True:
-    missedsquirrels = 0
-    hitsquirrels = 0
-    hammerRect.topleft = (400/2, 400/2)
-    squirrelRect.topleft = (random.randint(0, 400-40), random.randint(0,400-40))
-    moveLeft = moveRight = moveUp = moveDown = False
-    randomTime = random.randint(2000,3000)
-    randomTimer = 0
-    
-    while True:
-        gameClock.tick(30)
-        swing = 0
+        if not self.game_over:
+            self.hammer.update_pos()
+            self.hammer.swing_hammer()
         
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYUP:
-                if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-
-            if event.type == MOUSEMOTION:
-                hammerRect.move_ip(event.pos[0] - hammerRect.centerx, event.pos[1] - hammerRect.centery)
-            if event.type == MOUSEBUTTONDOWN:
-                swing = event.button
-                
-        pygame.mouse.set_pos(hammerRect.centerx, hammerRect.centery)
-
-        forestRect.topleft = (0,0)
-        gameSurface.blit(forestImage, forestRect)
-
-        gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR)
-        gamescoremissedrect = gamescoremissedobj.get_rect()
-        gamescoremissedrect.topleft = (10,0)
-        gameSurface.blit(gamescoremissedobj, gamescoremissedrect)
-
-        gamescorehitobj = gamefont.render('Hit = %s' % (hitsquirrels), 1, TEXTCOLOR)
-        gamescorehitrect = gamescorehitobj.get_rect()
-        gamescorehitrect.topleft = (10,40)
-        gameSurface.blit(gamescorehitobj, gamescorehitrect)
-
-        gameSurface.blit(hammerImage, hammerRect)
-        gameSurface.blit(squirrelImage, squirrelRect)
-
-        pygame.display.update()
-
-        if hammerRect.colliderect(squirrelRect) and swing == 1:
-            hitsquirrels += 1
-            squirrelRect.topleft = (random.randint(0, 400-40), random.randint(0,400-40))
-            randomTimer = 0
-            randomTime = random.randint(500,1000)
-            gameSurface.blit(squirrelImage, squirrelRect)
-            pygame.display.update()
+            # Check collision
+            if self.hammer.rect.colliderect(self.squirrel.rect) and self.hammer.swing == True:
+                self.hit += 1
+                self.timer = 0
+                self.setTime = random.randint(500,1000)
+                self.squirrel.reset_pos()
+                #print("Ouch!",self.hit)
                                  
-        if randomTimer > randomTime:
-            missedsquirrels += 1
-            squirrelRect.topleft = (random.randint(0, 400-40), random.randint(0,400-40))
-            randomTimer = 0
-            randomTime = random.randint(500,1000)
-            gameSurface.blit(squirrelImage, squirrelRect)
-            pygame.display.update()
+            if self.timer > self.setTime:
+                self.missed += 1
+                self.timer = 0
+                self.setTime = random.randint(500,1000)
+                self.squirrel.reset_pos()
+                #print("Missed me!",self.missed)
 
-        if missedsquirrels == 6:
-            break
+            if self.missed == 6:
+                self.game_over = True
 
-        randomTimer += randomClock.tick()
+            self.timer += self.squirrel_clock.tick()
+
+    def game_screen(self,screen):
+        """ Update the screen every loop """
+        screen.blit(self.background.image,[0,0])
+        
+        if self.game_over:
+            endfont = pygame.font.SysFont(None, 48)
+            text1 = endfont.render("Game Over", True, WHITE)
+            screen.blit(text1,[(400/4), (400/3)])
+            text2 = endfont.render("Press any key", True, WHITE)
+            screen.blit(text2,[(400/4)-30, (400/3)+50])
+            text3 = endfont.render("to play again", True, WHITE)
+            screen.blit(text3,[(400/4)+10, (400/3)+100])
+
+        if not self.game_over:
+            datafont = pygame.font.SysFont(None, 38)
+            missed_text = datafont.render("missed = %s" %(self.missed),True,WHITE)
+            screen.blit(missed_text,[10,10])
+            hit_text = datafont.render("hit = %s" %(self.hit),True,WHITE)
+            screen.blit(hit_text,[10,48])
+            screen.blit(self.hammer.image,self.hammer.rect)
+            screen.blit(self.squirrel.image,self.squirrel.rect)
+            
+        pygame.display.flip()
+        
+            
+def main():
+    """ Main program """
+    pygame.init()
+
+    size = [SCREEN_WIDTH, SCREEN_HEIGHT]
+    screen = pygame.display.set_mode(size)
+
+    pygame.display.set_caption("Hammer Time")
+    
+    done = False
+    clicked = False
+
+    gameclock = pygame.time.Clock()
+
+    start_game = Startgame()
+    
+    while not clicked:
+        clicked = start_game.check_start()
+        start_game.start_window(screen)
+        gameclock.tick(60)
+
+    pygame.mouse.set_visible(False)
+    game = Game()
+    
+    while not done:
+        done = game.process_events()
+        game.game_action()
+        game.game_screen(screen)
+        gameclock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
+
+        
+        
         
 
-    gamescoremissedobj = gamefont.render('Missed = %s' % (missedsquirrels), 1, TEXTCOLOR)
-    gamescoremissedrect = gamescoremissedobj.get_rect()
-    gamescoremissedrect.topleft = (10,0)
-    gameSurface.blit(gamescoremissedobj, gamescoremissedrect)
-
-    gamescorehitobj = gamefont.render('Hit = %s' % (hitsquirrels), 1, TEXTCOLOR)
-    gamescorehitrect = gamescorehitobj.get_rect()
-    gamescorehitrect.topleft = (10,40)
-    gameSurface.blit(gamescorehitobj, gamescorehitrect)
-
-    gameoverobj = gamefont.render('GAME OVER', 1, TEXTCOLOR)
-    gameoverrect = gametitleobj.get_rect()
-    gameoverrect.topleft = ((400/4), (400/3))
-    gameSurface.blit(gameoverobj, gameoverrect)
-
-    gamenewobj = gamefont.render('Press any key to',1, TEXTCOLOR)
-    gamenewrect = gamestartobj.get_rect()
-    gamenewrect.topleft = ((400/4)-30, (400/3)+50)
-    gameSurface.blit(gamenewobj, gamenewrect)
-
-    gamenewobj = gamefont.render('play again.',1, TEXTCOLOR)
-    gamenewrect = gamestartobj.get_rect()
-    gamenewrect.topleft = ((400/4)+10, (400/3)+100)
-    gameSurface.blit(gamenewobj, gamenewrect)
-
-    pygame.display.flip()
-    presstostart()
-
-
+        
