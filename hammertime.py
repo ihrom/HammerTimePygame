@@ -21,7 +21,9 @@ class Startgame(object):
     """This class begins intro window"""
     
     def __init__(self):
-        """Nothing to initialize"""
+        """Add some kind of intro screen here:"""
+        #pygame.sprite.Sprite.__init__(self)
+        #self.image = pygame.image.load("forest1.png")
 
     def check_start(self):
         for event in pygame.event.get():
@@ -38,7 +40,27 @@ class Startgame(object):
         screen.blit(starttext,[(400/4),(400/2)])
 
         pygame.display.flip()
-    
+
+class SpriteSheet(object):
+    """Grab images out of sprite sheet."""
+    sprite_sheet = None
+
+    def __init__(self, file_name):
+        """Constructor to load file"""
+        self.sprite_sheet = pygame.image.load(file_name).convert()
+
+    def get_image(self, x, y, width, height):
+        """Grab single image from sheet"""
+        #Create a new blank image
+        image = pygame.Surface([width, height]).convert()
+
+        #Copy the sprite from the large sheet onto the smaller image
+        image.blit(self.sprite_sheet, (0,0), (x, y, width, height))
+
+        #Set transparent color
+        image.set_colorkey((160,40,200))
+
+        return image    
     
 class Hammer(pygame.sprite.Sprite):
     """ This class represents the hammer """
@@ -48,12 +70,13 @@ class Hammer(pygame.sprite.Sprite):
         """ Sprite constructor """
         self.swing = False
 
-        #Call parent class
-        pygame.sprite.Sprite.__init__(self)
+        #Call parent constructor
+        super().__init__()
+
+        sprite_sheet = SpriteSheet("squirrel_hammerSpriteSheet1.png")
         #Load the image
-        self.image = pygame.image.load("hammer1.png")
-        #Set transparent color
-        self.image.set_colorkey([255,255,255])
+        self.image = sprite_sheet.get_image(18,20,27,22)
+        
         #Get position of image with rect()
         self.rect = self.image.get_rect()
 
@@ -73,28 +96,39 @@ class Hammer(pygame.sprite.Sprite):
 
 class Squirrel(pygame.sprite.Sprite):
     """ This class represents the squirrel """
+    squirrel_frames = []
         
     def __init__(self):
         """ Sprite constructor """
-        #Call parent class
-        pygame.sprite.Sprite.__init__(self)
-        #Load the image
-        self.image = pygame.image.load("squirrel.png")
-        #Set transparent color
-        self.image.set_colorkey([255,255,255])
-        #Get position of image with rect()
+        #Call parent's constructor
+        super().__init__()
+
+        sprite_sheet = SpriteSheet("squirrel_hammerSpriteSheet1.png")
+        #Grab images
+        image = sprite_sheet.get_image(133,13,52,39)
+        self.squirrel_frames.append(image)
+        image = sprite_sheet.get_image(133,76,52,39)
+        self.squirrel_frames.append(image)
+        image = sprite_sheet.get_image(197,13,52,39)
+        self.squirrel_frames.append(image)
+        image = sprite_sheet.get_image(197,76,52,39)
+        self.squirrel_frames.append(image)
+
+        self.image = self.squirrel_frames[0]
+
         self.rect = self.image.get_rect()
 
         #print("A squirrel is created!")
 
     def reset_pos(self):
-        """ Update the squirrel location """
-        self.rect.x = random.randrange(0,400)
-        self.rect.y = random.randrange(0,400)
+        """ Update the squirrel image and location """
+        self.image = self.squirrel_frames[random.randrange(0,3)]
+        self.rect.x = random.randrange(0,380)
+        self.rect.y = random.randrange(0,380)
         
         
 class Game(object):
-    """ This class represents an instance of the game """
+    """ This is the Game class object """
 
     #--- Class attributes ---
     # Sprites
@@ -107,7 +141,7 @@ class Game(object):
     hit = 0
     squirrel_clock = None
     timer = 0
-    setTime = 0
+    setTime = 1000
 
     #--- Class methods ---
     # Set up game
@@ -120,13 +154,13 @@ class Game(object):
         self.timer = 0
         self.setTime = random.randint(2000,3000)
 
-        #Create Background
+        #Create background
         self.background = Background()
     
-        # Create Hammer
+        #Create hammer
         self.hammer = Hammer()
 
-        # Create squirrel
+        #Create squirrel
         self.squirrel = Squirrel()
         self.squirrel.reset_pos()
         
