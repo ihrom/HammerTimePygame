@@ -35,11 +35,15 @@ class Startgame(object):
         """Prepare player to play"""
         screen.fill(BLACK)
 
+        titlefont = pygame.font.SysFont('stencil', 48)
+        titletext = titlefont.render("Hammer Time", True, WHITE)
+        titletext.set_alpha(100)
+        screen.blit(titletext,[(40),(100)])
+
         startfont = pygame.font.SysFont(None, 48)
         starttext = startfont.render("Click to start", True, WHITE)
-        screen.blit(starttext,[(400/4),(400/2)])
+        screen.blit(starttext,[(100),(200)])
 
-        pygame.display.flip()
 
 class SpriteSheet(object):
     """Grab images out of sprite sheet."""
@@ -152,7 +156,7 @@ class Game(object):
         self.hit = 0
         self.squirrel_clock = pygame.time.Clock()
         self.timer = 0
-        self.setTime = random.randint(2000,3000)
+        self.setTime = random.randint(5000,6000)
 
         #Create background
         self.background = Background()
@@ -204,6 +208,7 @@ class Game(object):
 
     def game_screen(self,screen):
         """ Update the screen every loop """
+        self.background.image.set_alpha(None)     #A value of 10 makes trails with hammer!!!
         screen.blit(self.background.image,[0,0])
         
         if self.game_over:
@@ -223,8 +228,6 @@ class Game(object):
             screen.blit(hit_text,[10,48])
             screen.blit(self.hammer.image,self.hammer.rect)
             screen.blit(self.squirrel.image,self.squirrel.rect)
-            
-        pygame.display.flip()
         
             
 def main():
@@ -246,15 +249,25 @@ def main():
     while not clicked:
         clicked = start_game.check_start()
         start_game.start_window(screen)
+        pygame.display.flip()
         gameclock.tick(60)
 
     pygame.mouse.set_visible(False)
     game = Game()
+
+    fade_counter = 0
+    while fade_counter < 30:
+        game.background.image.set_alpha(30)
+        screen.blit(game.background.image,[0,0])
+        fade_counter += 1
+        pygame.display.flip()
+        gameclock.tick(10)
     
     while not done:
         done = game.process_events()
         game.game_action()
         game.game_screen(screen)
+        pygame.display.flip()
         gameclock.tick(60)
 
     pygame.quit()
