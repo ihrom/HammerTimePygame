@@ -146,6 +146,7 @@ class Game(object):
     squirrel_clock = None
     timer = 0
     setTime = 1000
+    rect_y = -400
 
     #--- Class methods ---
     # Set up game
@@ -157,6 +158,7 @@ class Game(object):
         self.squirrel_clock = pygame.time.Clock()
         self.timer = 0
         self.setTime = random.randint(5000,6000)
+        self.rect_y = -400
 
         #Create background
         self.background = Background()
@@ -178,6 +180,16 @@ class Game(object):
                 if self.game_over:
                     self.__init__()
         return False
+
+    def beginfader(self,screen,mainclock):
+        """Creates fading displays"""
+        fade_counter = 0
+        while fade_counter < 30:
+            self.background.image.set_alpha(30)
+            screen.blit(self.background.image,[0,0])
+            fade_counter += 1
+            pygame.display.flip()
+            mainclock.tick(10)
 
     def game_action(self):
         """ This methods runs for each frame loop """
@@ -212,13 +224,20 @@ class Game(object):
         screen.blit(self.background.image,[0,0])
         
         if self.game_over:
-            endfont = pygame.font.SysFont(None, 48)
-            text1 = endfont.render("Game Over", True, WHITE)
-            screen.blit(text1,[(400/4), (400/3)])
-            text2 = endfont.render("Press any key", True, WHITE)
-            screen.blit(text2,[(400/4)-30, (400/3)+50])
-            text3 = endfont.render("to play again", True, WHITE)
-            screen.blit(text3,[(400/4)+10, (400/3)+100])
+            #screen.fill(BLACK)
+            if self.rect_y < 0:
+                pygame.draw.rect(screen, BLACK, [0,self.rect_y,400,400])
+                self.rect_y += 2
+
+            if self.rect_y == 0:
+                screen.fill(BLACK)            
+                endfont = pygame.font.SysFont(None, 48)
+                text1 = endfont.render("Game Over", True, WHITE)
+                screen.blit(text1,[(400/4), (400/3)])
+                text2 = endfont.render("Press any key", True, WHITE)
+                screen.blit(text2,[(400/4)-30, (400/3)+50])
+                text3 = endfont.render("to play again", True, WHITE)
+                screen.blit(text3,[(400/4)+10, (400/3)+100])            
 
         if not self.game_over:
             datafont = pygame.font.SysFont(None, 38)
@@ -254,14 +273,7 @@ def main():
 
     pygame.mouse.set_visible(False)
     game = Game()
-
-    fade_counter = 0
-    while fade_counter < 30:
-        game.background.image.set_alpha(30)
-        screen.blit(game.background.image,[0,0])
-        fade_counter += 1
-        pygame.display.flip()
-        gameclock.tick(10)
+    game.beginfader(screen,gameclock)
     
     while not done:
         done = game.process_events()
