@@ -27,6 +27,9 @@ class Startgame(object):
 
     def check_start(self):
         for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
             if event.type == MOUSEBUTTONDOWN:
                 return True
         return False
@@ -40,9 +43,9 @@ class Startgame(object):
         titletext.set_alpha(100)
         screen.blit(titletext,[(40),(100)])
 
-        startfont = pygame.font.SysFont(None, 48)
+        startfont = pygame.font.SysFont('timesnewroman', 30)
         starttext = startfont.render("Click to start", True, WHITE)
-        screen.blit(starttext,[(100),(200)])
+        screen.blit(starttext,[(125),(200)])
 
 
 class SpriteSheet(object):
@@ -127,8 +130,8 @@ class Squirrel(pygame.sprite.Sprite):
     def reset_pos(self):
         """ Update the squirrel image and location """
         self.image = self.squirrel_frames[random.randrange(0,3)]
-        self.rect.x = random.randrange(0,380)
-        self.rect.y = random.randrange(0,380)
+        self.rect.x = random.randrange(0,350)
+        self.rect.y = random.randrange(0,300)
         
         
 class Game(object):
@@ -169,6 +172,8 @@ class Game(object):
         #Create squirrel
         self.squirrel = Squirrel()
         self.squirrel.reset_pos()
+
+        pygame.mouse.set_visible(False)
         
     def process_events(self):
         for event in pygame.event.get():
@@ -177,6 +182,7 @@ class Game(object):
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return True
+            if event.type == MOUSEBUTTONDOWN and self.rect_y == 0:
                 if self.game_over:
                     self.__init__()
         return False
@@ -222,6 +228,7 @@ class Game(object):
         """ Update the screen every loop """
         self.background.image.set_alpha(None)     #A value of 10 makes trails with hammer!!!
         screen.blit(self.background.image,[0,0])
+        pygame.draw.rect(screen, BLACK, [0,360,400,50])
         
         if self.game_over:
             #screen.fill(BLACK)
@@ -231,20 +238,22 @@ class Game(object):
 
             if self.rect_y == 0:
                 screen.fill(BLACK)            
-                endfont = pygame.font.SysFont(None, 48)
-                text1 = endfont.render("Game Over", True, WHITE)
-                screen.blit(text1,[(400/4), (400/3)])
-                text2 = endfont.render("Press any key", True, WHITE)
-                screen.blit(text2,[(400/4)-30, (400/3)+50])
-                text3 = endfont.render("to play again", True, WHITE)
-                screen.blit(text3,[(400/4)+10, (400/3)+100])            
+                endfont1 = pygame.font.SysFont('broadway', 52)
+                endfont2 = pygame.font.SysFont('timesnewroman', 40)
+                text1 = endfont1.render("GAME OVER", True, WHITE)
+                screen.blit(text1,[40, 100])
+                text2 = endfont2.render("Score: %s" %(self.hit), True, WHITE)
+                screen.blit(text2,[130, 175])
+                text3 = endfont2.render("Play again?", True, WHITE)
+                screen.blit(text3,[110, 300])
+                pygame.mouse.set_visible(True)
 
         if not self.game_over:
-            datafont = pygame.font.SysFont(None, 38)
+            datafont = pygame.font.SysFont(None, 20)
             missed_text = datafont.render("missed = %s" %(self.missed),True,WHITE)
-            screen.blit(missed_text,[10,10])
+            screen.blit(missed_text,[75,375])
             hit_text = datafont.render("hit = %s" %(self.hit),True,WHITE)
-            screen.blit(hit_text,[10,48])
+            screen.blit(hit_text,[10,375])
             screen.blit(self.hammer.image,self.hammer.rect)
             screen.blit(self.squirrel.image,self.squirrel.rect)
         
