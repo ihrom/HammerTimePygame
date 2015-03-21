@@ -6,4 +6,4 @@ Version 1.2
 
 By Ivan Hromada 
 
->Please read `README.txt` for more information. To access the source code, clone the entire repo or just fetch the zip file and unpack it. To run the game from the windows command prompt, go to the appropriate directory and type `py -3.4 -m run_HT.py`.
+>Please read `README.txt` for more information. To access the source code, clone the entire repo or just fetch the zip file and unpack it. 
