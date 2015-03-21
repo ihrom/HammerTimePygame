@@ -1,6 +1,6 @@
 Hammer Time
 ===========
-Version 1.2
+Version 1.0.2a
 -----------
 ### A Python 3.3.5 Pygame
 
