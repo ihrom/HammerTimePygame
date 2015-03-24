@@ -7,10 +7,19 @@ A point-and-click game by Ivan Hromada.
 Installing and Running
 ---------------------- 
 
-Working on making executable. In the mean time, 
-you will need to install Python 3 and Pygame. 
-To run the game from the windows console, go to game directory and type: run_HT.py. If it 
-doesn't work you will need to set PATH. 
+You will need to install Python 3+ and Pygame. 
+You can download the latest version of Python (3.4.3) at
+   python.org 
+
+The corresponding pygame package (whl. file) at 
+   http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame
+
+Move the whl. file to your Python root directory then
+in from your windows console type
+   py -3.4 -m pip install <pygame source file.whl>
+
+To run the game from the windows console, 
+go to game directory and type: run_HT.py. 
 
 Playing
 ------- 
@@ -33,7 +42,7 @@ Art -
 
 Music -    
    Sourced from http://www.freemusicarchive.org/
-   "<Title>" by <artist>
+   "Bruce Lee (acoustic Jam)" by Doron Deutsch
 
 
 
