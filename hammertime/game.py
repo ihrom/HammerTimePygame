@@ -58,12 +58,12 @@ class SpriteSheet(object):
 
     def __init__(self, file_name):
         """Constructor to load file"""
-        self.sprite_sheet = load_image(file_name).convert()
+        self.sprite_sheet = load_image(file_name)
 
     def get_image(self, x, y, width, height):
         """Grab single image from sheet"""
         #Create a new blank image
-        image = pygame.Surface([width, height]).convert()
+        image = pygame.Surface([width, height])
 
         #Copy the sprite from the large sheet onto the smaller image
         image.blit(self.sprite_sheet, (0,0), (x, y, width, height))
