@@ -6,4 +6,4 @@ Version 1.0.2a
 
 By Ivan Hromada 
 
->Please read `README.txt` for more information. To access the source code, clone the entire repo or just fetch the zip file in /dist and unpack it. 
+>Please read `README.txt` for more information. To access the source code, clone the entire repo. 
